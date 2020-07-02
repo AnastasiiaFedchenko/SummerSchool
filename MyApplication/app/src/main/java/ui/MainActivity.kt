@@ -1,5 +1,6 @@
 package ui
 
+import android.content.pm.ActivityInfo
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         // Инициализация массива
         val c = arrayOf(
             "EUR",
@@ -75,15 +77,19 @@ class MainActivity : AppCompatActivity() {
     }
     class getData() : AsyncTask<String, Void, String>() {
         override fun doInBackground(vararg params: String?): String? {
-            var url = "https://currate.ru/api/?get=rates&pairs=" + s1 + s3 + "&key=fbebfc3cc40881c10be5b0030b5502b8"
             var result = ""
-            try {
-                result = URL(url).readText()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
+            if(s1==s3){
+
+                result = "1.00"
+            } else{
+                var url = "https://currate.ru/api/?get=rates&pairs=" + s1 + s3 + "&key=fbebfc3cc40881c10be5b0030b5502b8"
+
+                try {
+                    result = URL(url).readText()
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
             }
-
-
             return result
         }
 
@@ -103,10 +109,14 @@ class MainActivity : AppCompatActivity() {
         stroca = stroca.substringAfterLast('"')
         var coefficient = stroca.toDouble()
         var user = editTextNumberDecimal.text.toString()
-        coefficient =  user.toDouble() * coefficient
-        var bd = BigDecimal(Double.toString(coefficient))
-        bd = bd.setScale(3, RoundingMode.HALF_UP)
-        textView.setText(bd.toString())
+        if(user == "") textView.setText("Ошибка, ничего не введено")
+        else{
+            coefficient =  user.toDouble() * coefficient
+            var bd = BigDecimal(Double.toString(coefficient))
+            bd = bd.setScale(3, RoundingMode.HALF_UP)
+            textView.setText(bd.toString())
+        }
+
 
     }
 }
